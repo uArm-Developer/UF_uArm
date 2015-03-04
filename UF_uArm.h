@@ -2,13 +2,18 @@
 * File Name          : UF_uArm.h
 * Author             : Evan
 * Updated            : Evan
-* Version            : V0.3 (BATE)
+* Version            : V0.4 (BATE)
 * Created Date       : 2 May, 2014
 * Modified Date      : 16 June, 2014
 * Description        : 
 * License            : 
 * Copyright(C) 2014 UFactory Team. All right reserved.
-*******************************************************************************/
+*******************************************************************************
+* Updated            : Alex
+* Date               : 04 Mar, 2015
+* Version            : V0.4
+* Description        : CtrlData 0x80 for RESET
+*************************************************************************/
 
 #include <Arduino.h>
 #include <EEPROM.h>
@@ -47,6 +52,7 @@
 #define BTN_TIMEOUT_3000        3000
 #define CATCH					0x01
 #define RELEASE					0x02
+#define RESET                   0x80
 #define CALIBRATION_FLAG		0xEE
 #define SERVO_MAX				605
 #define SERVO_MIN				80

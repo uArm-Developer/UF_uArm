@@ -2,12 +2,17 @@
 * File Name          : Standard
 * Author             : Evan
 * Updated            : Evan
-* Version            : V0.0.1
+* Version            : V0.0.2
 * Date               : 15 June, 2014
 * Description        : Mouse Control or Leap Motion Control(Processing), 
                        Calibration Mode & Rrecording Mode.
 * License            : 
 * Copyright(C) 2014 UFactory Team. All right reserved.
+* *************************************************************************
+* Updated            : Alex
+* Date               : 04 Mar, 2015
+* Version            : V0.0.2
+* Description        : CtrlData 0x80 for RESET
 *************************************************************************/
 #include <EEPROM.h>
 #include <UF_uArm.h>
@@ -22,10 +27,7 @@ void setup()
 {
   Serial.begin(9600);  // start serial port at 9600 bps
 //  while(!Serial);     // wait for serial port to connect. Needed for Leonardo only
-  uarm.init();          // initialize the uArm position
-  uarm.setServoSpeed(SERVO_R,    0);  // 0=full speed, 1-255 slower to faster
-  uarm.setServoSpeed(SERVO_L,    0);  // 0=full speed, 1-255 slower to faster
-  uarm.setServoSpeed(SERVO_ROT, 50);  // 0=full speed, 1-255 slower to faster
+  uarmReset();
 }
 
 void loop()
@@ -50,25 +52,38 @@ void loop()
       {
         stateMachine = 0;
         counter=0;
-        *((char *)(&rotationTemp)  )  = dataBuf[1]; // recevive 1byte
-        *((char *)(&rotationTemp)+1)  = dataBuf[0]; 
-        *((char *)(&stretchTemp )  )  = dataBuf[3]; 
-        *((char *)(&stretchTemp )+1)  = dataBuf[2]; 
-        *((char *)(&heightTemp  )  )  = dataBuf[5]; 
-        *((char *)(&heightTemp  )+1)  = dataBuf[4]; 
-        *((char *)(&handRotTemp )  )  = dataBuf[7]; 
-        *((char *)(&handRotTemp )+1)  = dataBuf[6]; 
-        uarm.setPosition(stretchTemp, heightTemp, rotationTemp, handRotTemp);
-        /* pump action, Valve Stop. */
-        if(dataBuf[8] & CATCH)   uarm.gripperCatch();
-        /* pump stop, Valve action. 
-           Note: The air relief valve can not work for a long time, 
-           should be less than ten minutes. */
-        if(dataBuf[8] & RELEASE) uarm.gripperRelease();
+        if(dataBuf[8] & RESET)
+        {
+           uarmReset();
+         }
+         else{        
+            *((char *)(&rotationTemp)  )  = dataBuf[1]; // recevive 1byte
+            *((char *)(&rotationTemp)+1)  = dataBuf[0]; 
+            *((char *)(&stretchTemp )  )  = dataBuf[3]; 
+            *((char *)(&stretchTemp )+1)  = dataBuf[2]; 
+            *((char *)(&heightTemp  )  )  = dataBuf[5]; 
+            *((char *)(&heightTemp  )+1)  = dataBuf[4]; 
+            *((char *)(&handRotTemp )  )  = dataBuf[7]; 
+            *((char *)(&handRotTemp )+1)  = dataBuf[6]; 
+            uarm.setPosition(stretchTemp, heightTemp, rotationTemp, handRotTemp);
+            /* pump action, Valve Stop. */
+            if(dataBuf[8] & CATCH)   uarm.gripperCatch();
+            /* pump stop, Valve action. 
+               Note: The air relief valve can not work for a long time, 
+               should be less than ten minutes. */
+            if(dataBuf[8] & RELEASE) uarm.gripperRelease();
+         }
       }
     }
   }
   /* delay release valve, this function must be in the main loop */
   uarm.gripperDetach();  
 } 
+
+void uarmReset(){
+  uarm.init();          // initialize the uArm position
+  uarm.setServoSpeed(SERVO_R,    0);  // 0=full speed, 1-255 slower to faster
+  uarm.setServoSpeed(SERVO_L,    0);  // 0=full speed, 1-255 slower to faster
+  uarm.setServoSpeed(SERVO_ROT, 50);  // 0=full speed, 1-255 slower to faster
+}
 
