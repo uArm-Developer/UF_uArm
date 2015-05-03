@@ -44,11 +44,11 @@ void loop()
     else if(stateMachine == 2)
     {
       dataBuf[counter++] = rxBuf;
-      if(counter > 8)  // receive 9 byte data
+      if(counter > 8)  // receive 9 bytes data
       {
         stateMachine = 0;
         counter=0;
-        *((char *)(&rotationTemp)  )  = dataBuf[1]; // recevive 1byte
+        *((char *)(&rotationTemp)  )  = dataBuf[1]; // receive 1 byte
         *((char *)(&rotationTemp)+1)  = dataBuf[0]; 
         *((char *)(&stretchTemp )  )  = dataBuf[3]; 
         *((char *)(&stretchTemp )+1)  = dataBuf[2]; 
